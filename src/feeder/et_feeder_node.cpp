@@ -25,15 +25,20 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
     } else if (attr_name == "involved_dim") {
       this->involved_dim_.clear();
       for (const bool val : attr.bool_list().values()) {
-        std::cout << "val: " << val << std::endl;
         this->involved_dim_.push_back(val);
       }
       this->involved_dim_size_ = this->involved_dim_.size();
-      std::cout << "involved_dim_size_: " << this->involved_dim_size_ << std::endl;
     } else if (attr_name == "comm_priority") {
       this->comm_priority_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "comm_size") {
-      this->comm_size_ = attr.int64_val();
+      // std::cout << "attr: " << attr.int64_val()<< " attr: " << attr.uint64_val() << std::endl;
+      this->comm_size_ = max(static_cast<uint64_t>(attr.int64_val()),attr.uint64_val());
+      // this->comm_size_ = attr.uint64_val();
+      // std::cout << "comm_size: " << this->comm_size_ << std::endl;
+      if (this->comm_size_ != 0 && this->is_cpu_op_ == 1) {
+        // std::cout << "change is_cpu_op_ to 0" << std::endl;
+        this->is_cpu_op_ = 0;
+      }
     } else if (attr_name == "comm_src") {
       this->comm_src_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "comm_dst") {
