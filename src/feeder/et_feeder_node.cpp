@@ -25,9 +25,17 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
     } else if (attr_name == "involved_dim") {
       this->involved_dim_.clear();
       for (const bool val : attr.bool_list().values()) {
+<<<<<<< HEAD
         this->involved_dim_.push_back(val);
       }
       this->involved_dim_size_ = this->involved_dim_.size();
+=======
+        std::cout << "val: " << val << std::endl;
+        this->involved_dim_.push_back(val);
+      }
+      this->involved_dim_size_ = this->involved_dim_.size();
+      std::cout << "involved_dim_size_: " << this->involved_dim_size_ << std::endl;
+>>>>>>> upd
     } else if (attr_name == "comm_priority") {
       this->comm_priority_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "comm_size") {

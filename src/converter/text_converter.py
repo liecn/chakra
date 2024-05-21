@@ -53,7 +53,11 @@ class Layer:
 
 class TextConverter:
     def __init__(
+<<<<<<< HEAD
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
+=======
+        self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, logger: logging.Logger
+>>>>>>> upd
     ) -> None:
         self.input_filename = input_filename
         self.output_filename = output_filename
@@ -427,6 +431,7 @@ class TextConverter:
                 global_metadata = self.get_global_metadata()
                 encode_message(g, global_metadata)
 <<<<<<< HEAD
+<<<<<<< HEAD
                 fwd_comp_node_init = self.get_comp_node('Init', "FWD", 1)
                 encode_message(g, fwd_comp_node_init)
                 fwd_comp_node_terminal = self.get_comp_node('Terminal', "FWD", 1)
@@ -558,6 +563,85 @@ class TextConverter:
 =======
 
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                for i in range(self.num_passes):
+                    fwd_comp_node = None
+
+                    # forward pass
+                    for idx, layer in enumerate(layers):
+                        fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time)
+                        if layer.bwd_wg_comm_node is not None:
+                            self.add_parent(fwd_comp_node, layer.bwd_wg_comm_node)
+                        elif layer.bwd_wg_comp_node is not None:
+                            self.add_parent(fwd_comp_node, layer.bwd_wg_comp_node)
+                        if idx != 0:
+                            self.add_parent(fwd_comp_node, layers[idx - 1].fwd_comp_node)
+                        if idx == last_bottom_layer:
+                            self.add_parent(fwd_comp_node, layers[0].fwd_comm_node)
+                        layer.fwd_comp_node = fwd_comp_node
+                        encode_message(g, fwd_comp_node)
+
+                        if layer.fwd_comm_type == "ALLTOALL":
+                            fwd_comm_node = self.get_comm_coll_node(
+                                layer.name, layer.fwd_comm_type, layer.fwd_comm_size
+                            )
+                            attr = ChakraAttr(name="involved_dim")
+                            for _ in range(self.num_dims):
+                                attr.bool_list.values.append(True)
+                            fwd_comm_node.attr.append(attr)
+                            self.add_parent(fwd_comm_node, fwd_comp_node)
+                            layer.fwd_comm_node = fwd_comm_node
+                            encode_message(g, fwd_comm_node)
+
+                    # backward pass
+                    for idx, layer in enumerate(reversed(layers)):
+                        bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
+                        if idx == 0:
+                            if fwd_comp_node is None:
+                                raise ValueError("fwd_comp_node is None")
+                            self.add_parent(bwd_wg_comp_node, fwd_comp_node)
+                        else:
+                            if layers[len(layers) - idx].bwd_ig_comp_node is not None:
+                                self.add_parent(bwd_wg_comp_node, layers[len(layers) - idx].bwd_ig_comp_node)
+                            if layers[len(layers) - idx - 1].bwd_ig_comm_node is not None:
+                                self.add_parent(bwd_wg_comp_node, layers[len(layers) - idx - 1].bwd_ig_comm_node)
+                        layer.bwd_wg_comp_node = bwd_wg_comp_node
+                        encode_message(g, bwd_wg_comp_node)
+
+                        if layer.bwd_wg_comm_type != "NONE":
+                            bwd_wg_comm_node = self.get_comm_coll_node(
+                                layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
+                            )
+                            attr = ChakraAttr(name="involved_dim")
+                            for _ in range(self.num_dims):
+                                attr.bool_list.values.append(True)
+                            bwd_wg_comm_node.attr.append(attr)
+                            self.add_parent(bwd_wg_comm_node, bwd_wg_comp_node)
+                            layer.bwd_wg_comm_node = bwd_wg_comm_node
+                            encode_message(g, bwd_wg_comm_node)
+
+                        bwd_ig_comp_node = None
+                        if idx != (len(layers) - 1):
+                            bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
+                            self.add_parent(bwd_ig_comp_node, bwd_wg_comp_node)
+                            layer.bwd_ig_comp_node = bwd_ig_comp_node
+                            encode_message(g, bwd_ig_comp_node)
+
+                        if (len(layers) - idx - 1) == (last_bottom_layer + 1):
+                            bwd_ig_comm_node = self.get_comm_coll_node(
+                                layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
+                            )
+                            attr = ChakraAttr(name="involved_dim")
+                            for _ in range(self.num_dims):
+                                attr.bool_list.values.append(True)
+                            bwd_ig_comm_node.attr.append(attr)
+                            if bwd_ig_comp_node is None:
+                                raise ValueError("bwd_ig_comp_node is None")
+                            self.add_parent(bwd_ig_comm_node, bwd_ig_comp_node)
+                            layers[0].bwd_ig_comm_node = bwd_ig_comm_node
+                            encode_message(g, bwd_ig_comm_node)
+
+>>>>>>> upd
                 for layer in layers:
                     layer.bwd_wg_comm_node = None
                     layer.bwd_wg_comp_node = None
