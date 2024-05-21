@@ -60,6 +60,8 @@ def get_comm_type_attr(comm_type: int) -> ChakraAttr:
     """Create a communication type attribute."""
     return ChakraAttr(name="comm_type", int64_val=comm_type)
 
+def get_involved_dim_attr(num_dims: int) -> ChakraAttr:
+    return ChakraAttr(name="involved_dim", bool_list=BoolList(values=[True] * num_dims))
 
 def one_metadata_node_all_types(num_npus: int) -> None:
     """Generate metadata nodes with all types of attributes."""
@@ -254,6 +256,12 @@ def one_comm_recv_node(num_npus: int, tensor_size: int) -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Execution Trace Generator")
     parser.add_argument("--num_npus", type=int, default=64, help="Number of NPUs")
+    parser.add_argument(
+        "--num_dims",
+        type=int,
+        default=2,
+        help="Number of dimensions in the network topology"
+    )
     parser.add_argument("--default_runtime", type=int, default=5, help="Default runtime of compute nodes")
     parser.add_argument("--default_tensor_size", type=int, default=1024, help="Default tensor size of memory nodes")
     parser.add_argument(

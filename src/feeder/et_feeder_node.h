@@ -4,7 +4,7 @@
 #include <unordered_set>
 #include <vector>
 
-#include "et_def.pb.h"
+#include "schema/protobuf/et_def.pb.h"
 
 namespace Chakra {
 
@@ -25,13 +25,15 @@ class ETFeederNode {
 
   uint64_t id();
   std::string name();
-  bool is_cpu_op();
+  uint32_t is_cpu_op();
   ChakraProtoMsg::NodeType type();
   uint64_t runtime();
   uint64_t num_ops();
   uint32_t tensor_loc();
   uint64_t tensor_size();
   ChakraProtoMsg::CollectiveCommType comm_type();
+  uint32_t involved_dim_size();
+  bool involved_dim(int i);
   uint32_t comm_priority();
   uint64_t comm_size();
   uint32_t comm_src();
@@ -59,6 +61,8 @@ class ETFeederNode {
   uint32_t tensor_loc_;
   uint64_t tensor_size_;
   ChakraProtoMsg::CollectiveCommType comm_type_;
+  uint32_t involved_dim_size_;
+  std::vector<bool> involved_dim_;
   uint32_t comm_priority_;
   uint64_t comm_size_;
   uint32_t comm_src_;

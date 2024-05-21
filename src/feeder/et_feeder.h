@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "et_feeder_node.h"
-#include "protoio.hh"
+#include "src/third_party/utils/protoio.hh"
 
 namespace Chakra {
 struct CompareNodes : public std::binary_function<
