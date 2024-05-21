@@ -1,0 +1,1 @@
+DEBUG [05/21/2024 01:04:45 AM] /data1/lichenni/software/anaconda3/envs/astra-sim/bin/chakra_converter --input_type Text --input_filename /data1/lichenni/projects/astra-sim/inputs/workload/ASTRA-sim-1.0/Resnet50_DataParallel.txt --output_filename /data1/lichenni/projects/astra-sim/inputs/workload/trace/Resnet50_DataParallel --num_npus 8 --num_passes 1 --num_dims 1
