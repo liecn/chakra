@@ -58,7 +58,7 @@ class PyTorchConverter:
                                                        dependencies.
     """
 
-    def __init__(self, input_filename: str, output_filename: str, logger: logging.Logger) -> None:
+    def __init__(self, input_filename: str, output_filename: str, num_dims: int, logger: logging.Logger) -> None:
         """
         Initializes the PyTorch to Chakra converter. It sets up necessary
         attributes and prepares the environment for the conversion process.
@@ -71,6 +71,7 @@ class PyTorchConverter:
         self.input_filename = input_filename
         self.output_filename = output_filename
         self.chakra_et = None
+        self.num_dims = num_dims
         self.logger = logger
         self.initialize_attributes()
 
@@ -116,6 +117,7 @@ class PyTorchConverter:
                             [
                                 ChakraAttr(name="comm_type", int64_val=collective_comm_type),
                                 ChakraAttr(name="comm_size", int64_val=pytorch_gpu_node.comm_size),
+                                ChakraAttr(name="involved_dim", bool_list={"values": [True] * self.num_dims}),
                             ]
                         )
 

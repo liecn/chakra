@@ -39,6 +39,12 @@ def main() -> None:
         "--output_filename", type=str, default=None, required=True, help="Output Chakra execution trace filename"
     )
     parser.add_argument(
+        "--num_dims",
+        type=int,
+        default=None,
+        required=True,
+        help="Number of dimensions in the network topology")
+    parser.add_argument(
         "--num_npus", type=int, default=None, required="Text" in sys.argv, help="Number of NPUs in a system"
     )
     parser.add_argument(
@@ -52,10 +58,10 @@ def main() -> None:
 
     try:
         if args.input_type == "Text":
-            converter = TextConverter(args.input_filename, args.output_filename, args.num_npus, args.num_passes, logger)
+            converter = TextConverter(args.input_filename, args.output_filename, args.num_dims, args.num_npus, args.num_passes, logger)
             converter.convert()
         elif args.input_type == "PyTorch":
-            converter = PyTorchConverter(args.input_filename, args.output_filename, logger)
+            converter = PyTorchConverter(args.input_filename, args.output_filename, args.num_dims, logger)
             converter.convert()
         else:
             supported_types = ["Text", "PyTorch"]

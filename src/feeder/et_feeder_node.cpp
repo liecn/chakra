@@ -14,7 +14,7 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
     const string& attr_name = attr.name();
 
     if (attr_name == "is_cpu_op") {
-      this->is_cpu_op_ = static_cast<bool>(attr.bool_val());
+      this->is_cpu_op_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "num_ops") {
       this->num_ops_ = static_cast<uint64_t>(attr.int64_val());
     } else if (attr_name == "tensor_size") {
@@ -22,6 +22,14 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
     } else if (attr_name == "comm_type") {
       this->comm_type_ =
           static_cast<ChakraProtoMsg::CollectiveCommType>(attr.int64_val());
+    } else if (attr_name == "involved_dim") {
+      this->involved_dim_.clear();
+      for (const bool val : attr.bool_list().values()) {
+        std::cout << "val: " << val << std::endl;
+        this->involved_dim_.push_back(val);
+      }
+      this->involved_dim_size_ = this->involved_dim_.size();
+      std::cout << "involved_dim_size_: " << this->involved_dim_size_ << std::endl;
     } else if (attr_name == "comm_priority") {
       this->comm_priority_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "comm_size") {
@@ -91,7 +99,7 @@ string ETFeederNode::name() {
   return name_;
 }
 
-bool ETFeederNode::is_cpu_op() {
+uint32_t ETFeederNode::is_cpu_op() {
   return is_cpu_op_;
 }
 
@@ -117,6 +125,14 @@ uint64_t ETFeederNode::tensor_size() {
 
 ChakraProtoMsg::CollectiveCommType ETFeederNode::comm_type() {
   return comm_type_;
+}
+
+uint32_t ETFeederNode::involved_dim_size() {
+  return involved_dim_size_;
+}
+
+bool ETFeederNode::involved_dim(int i) {
+  return involved_dim_[i];
 }
 
 uint32_t ETFeederNode::comm_priority() {
