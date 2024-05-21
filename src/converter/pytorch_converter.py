@@ -50,6 +50,7 @@ class PyTorchConverter:
         self.logger = logger
 
     def convert(self) -> None:
+<<<<<<< HEAD
         """Convert PyTorch execution traces into the Chakra format."""
         pytorch_et_data = self.load_pytorch_execution_traces()
         (
@@ -96,6 +97,40 @@ class PyTorchConverter:
         #             self.chakra_nodes[chakra_gpu_node.id] = chakra_gpu_node
 
         # root_nodes = [node for node in self.chakra_nodes.values() if self.is_root_node(node)]
+=======
+        """
+        Converts PyTorch execution traces into the Chakra format. Orchestrates
+        the conversion process including trace loading, trace opening, phase
+        end node construction, node splitting, and node conversion.
+        """
+        self.load_pytorch_execution_traces()
+
+        self.open_chakra_execution_trace()
+
+        for _, pytorch_node in self.pytorch_nodes.items():
+            if (pytorch_node.get_op_type() == PyTorchNodeType.CPU_OP) or (
+                pytorch_node.get_op_type() == PyTorchNodeType.LABEL
+            ):
+                chakra_node = self.convert_to_chakra_node(pytorch_node)
+                self.chakra_nodes[chakra_node.id] = chakra_node
+
+                for pytorch_gpu_node in pytorch_node.gpu_children:
+                    chakra_gpu_node = self.convert_to_chakra_node(pytorch_gpu_node)
+
+                    if chakra_node.type == COMM_COLL_NODE:
+                        collective_comm_type = self.get_collective_comm_type(pytorch_gpu_node.name)
+                        chakra_gpu_node.attr.extend(
+                            [
+                                ChakraAttr(name="comm_type", int64_val=collective_comm_type),
+                                ChakraAttr(name="comm_size", int64_val=pytorch_gpu_node.comm_size),
+                                ChakraAttr(name="involved_dim", bool_list={"values": [True] * self.num_dims}),
+                            ]
+                        )
+
+                    self.chakra_nodes[chakra_gpu_node.id] = chakra_gpu_node
+
+        root_nodes = [node for node in self.chakra_nodes.values() if self.is_root_node(node)]
+>>>>>>> upd
         for root_node in root_nodes:
             self.convert_ctrl_dep_to_data_dep(pytorch_nodes, chakra_nodes, root_node)
         chakra_nodes = self.remove_dangling_nodes(chakra_nodes)
