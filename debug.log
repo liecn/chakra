@@ -1,2 +1,6 @@
+<<<<<<< HEAD
 
 DEBUG [05/24/2024 06:09:45 PM] /data1/lichenni/software/anaconda3/envs/astra-sim/bin/chakra_converter --input_type Text --input_filename /data1/lichenni/projects/astra-sim/inputs/workload/ASTRA-sim-1.0/DLRM_HybridParallel.txt --output_filename /data1/lichenni/projects/astra-sim/inputs/workload/test/DLRM_HybridParallel --num_npus 8 --num_passes 1 --num_dims 1 --num_concurrency 2
+=======
+DEBUG [05/22/2024 07:36:17 PM] /data1/lichenni/software/anaconda3/envs/astra-sim/bin/chakra_timeline_visualizer --input_filename /data1/lichenni/projects/astra-sim/res_megatron.csv --output_filename /data1/lichenni/projects/astra-sim/res_megatron.json --num_npus 8 --npu_frequency 1000000000
+>>>>>>> add visualization script
