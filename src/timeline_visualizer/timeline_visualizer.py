@@ -40,7 +40,7 @@ def is_local_mem_node(node_name: str) -> bool:
         ("MEM_LOAD_NODE" in node_name)
         and ("LOCAL_MEMORY" in node_name)
         or ("MEM_STORE_NODE" in node_name)
-        and ("LOCAL_MEMORY" in node_name)
+        and ("LOCAL_MEMORY" in node_name) or ("LOCAL_MEMORY_" in node_name)
     )
 
 
@@ -54,11 +54,11 @@ def is_remote_mem_node(node_name: str) -> bool:
 
 
 def is_comp_node(node_name: str) -> bool:
-    return "COMP_NODE" in node_name
+    return "COMP_NODE" in node_name or "COMP_" in node_name
 
 
 def is_comm_node(node_name: str) -> bool:
-    return ("COMM_SEND_NODE" in node_name) or ("COMM_RECV_NODE" in node_name) or ("COMM_COLL_NODE" in node_name)
+    return ("COMM_SEND_NODE" in node_name) or ("COMM_RECV_NODE" in node_name) or ("COMM_COLL_NODE" in node_name) or ("COMM_" in node_name)
 
 
 def get_tid(node_name: str) -> TID:
@@ -102,9 +102,9 @@ def get_trace_events(input_filename: str, num_npus: int, npu_frequency: int) -> 
                     node_name = trace_dict[npu_id][node_id][0]
                     tid = get_tid(node_name)
                     issued_cycle = trace_dict[npu_id][node_id][1]
-                    issued_ms = (issued_cycle / npu_frequency) / 1_000
+                    issued_ms = (issued_cycle / npu_frequency) * 1_000
                     duration_in_cycles = curr_cycle - issued_cycle
-                    duration_in_ms = duration_in_cycles / (npu_frequency * 1_000)
+                    duration_in_ms = duration_in_cycles / (npu_frequency / 1_000)
 
                     trace_events.append(
                         {
