@@ -48,6 +48,9 @@ def main() -> None:
         "--num_npus", type=int, default=None, required="Text" in sys.argv, help="Number of NPUs in a system"
     )
     parser.add_argument(
+        "--num_concurrency", type=int, default=None, required="Text" in sys.argv, help="Number of concurrent tasks in a system"
+    )
+    parser.add_argument(
         "--num_passes", type=int, default=None, required="Text" in sys.argv, help="Number of training passes"
     )
     parser.add_argument("--log_filename", type=str, default="debug.log", help="Log filename")
@@ -58,7 +61,7 @@ def main() -> None:
 
     try:
         if args.input_type == "Text":
-            converter = TextConverter(args.input_filename, args.output_filename, args.num_dims, args.num_npus, args.num_passes, logger)
+            converter = TextConverter(args.input_filename, args.output_filename, args.num_dims, args.num_npus, args.num_passes, args.num_concurrency,logger)
             converter.convert()
         elif args.input_type == "PyTorch":
             converter = PyTorchConverter(args.input_filename, args.output_filename, args.num_dims, logger)
