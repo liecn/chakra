@@ -59,11 +59,7 @@ def main() -> None:
 
     try:
         if args.input_type == "Text":
-<<<<<<< HEAD
             converter = TextConverter(args.input_filename, args.output_filename, args.num_dims, args.num_npus, args.num_passes, args.num_concurrency,logger)
-=======
-            converter = TextConverter(args.input_filename, args.output_filename, args.num_dims, args.num_npus, args.num_passes, logger)
->>>>>>> upd
             converter.convert()
         elif args.input_type == "PyTorch":
             converter = PyTorchConverter(args.input_filename, args.output_filename, args.num_dims, logger)

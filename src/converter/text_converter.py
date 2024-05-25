@@ -54,10 +54,14 @@ class Layer:
 class TextConverter:
     def __init__(
 <<<<<<< HEAD
+<<<<<<< HEAD
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
 =======
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, logger: logging.Logger
 >>>>>>> upd
+=======
+        self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
+>>>>>>> merge traces for enabling multiple jobs
     ) -> None:
         self.input_filename = input_filename
         self.output_filename = output_filename
@@ -422,7 +426,10 @@ class TextConverter:
     def convert_hybrid_dlrm(self, f: TextIOWrapper, num_layers: int, last_bottom_layer: int) -> None:
         layers_init = self.get_layers(f, num_layers)
 <<<<<<< HEAD
+<<<<<<< HEAD
         concurrency_factor=np.linspace(300, 300, self.num_concurrency).astype(int)
+=======
+>>>>>>> merge traces for enabling multiple jobs
 =======
 >>>>>>> merge traces for enabling multiple jobs
         for npu_id in range(self.num_npus):
@@ -432,6 +439,7 @@ class TextConverter:
                 encode_message(g, global_metadata)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 fwd_comp_node_init = self.get_comp_node('Init', "FWD", 1)
                 encode_message(g, fwd_comp_node_init)
                 fwd_comp_node_terminal = self.get_comp_node('Terminal', "FWD", 1)
@@ -439,6 +447,8 @@ class TextConverter:
                     print(f"concurrent_idx: {concurrent_idx}/{self.num_concurrency}, {num_layers}")
                     layers=copy.deepcopy(layers_init)
 =======
+=======
+>>>>>>> merge traces for enabling multiple jobs
                 fwd_comp_node_init = self.get_comp_node('Init', "FWD", 0)
                 encode_message(g, fwd_comp_node_init)
                 for concurrent_idx in range(self.num_concurrency):
@@ -446,6 +456,9 @@ class TextConverter:
                     layers=copy.deepcopy(layers_init)
                     for layer in layers:
                         layer.name+=f"_{concurrent_idx}"
+<<<<<<< HEAD
+>>>>>>> merge traces for enabling multiple jobs
+=======
 >>>>>>> merge traces for enabling multiple jobs
                     for i in range(self.num_passes):
                         print(f"num_pass: {i}, {len(layers)}")
@@ -454,7 +467,11 @@ class TextConverter:
                         for idx, layer in enumerate(layers):
                             print(f"layer: {layer.name}")
 <<<<<<< HEAD
+<<<<<<< HEAD
                             fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
+=======
+                            fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time)
+>>>>>>> merge traces for enabling multiple jobs
 =======
                             fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
@@ -466,9 +483,13 @@ class TextConverter:
                                 self.add_parent(fwd_comp_node, layers[idx - 1].fwd_comp_node)
                             else:
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 if i==0:
                                     self.add_parent(fwd_comp_node, fwd_comp_node_init)
                                     fwd_comp_node.duration_micros+=concurrent_idx*10
+=======
+                                self.add_parent(fwd_comp_node, fwd_comp_node_init)
+>>>>>>> merge traces for enabling multiple jobs
 =======
                                 self.add_parent(fwd_comp_node, fwd_comp_node_init)
 >>>>>>> merge traces for enabling multiple jobs
@@ -480,7 +501,11 @@ class TextConverter:
                             if layer.fwd_comm_type == "ALLTOALL":
                                 fwd_comm_node = self.get_comm_coll_node(
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size*concurrency_factor[concurrent_idx],concurrent_idx
+=======
+                                    layer.name, layer.fwd_comm_type, layer.fwd_comm_size
+>>>>>>> merge traces for enabling multiple jobs
 =======
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size
 >>>>>>> merge traces for enabling multiple jobs
@@ -496,7 +521,11 @@ class TextConverter:
                         # backward pass
                         for idx, layer in enumerate(reversed(layers)):
 <<<<<<< HEAD
+<<<<<<< HEAD
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
+=======
+                            bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
+>>>>>>> merge traces for enabling multiple jobs
 =======
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
@@ -515,7 +544,11 @@ class TextConverter:
                             if layer.bwd_wg_comm_type != "NONE":
                                 bwd_wg_comm_node = self.get_comm_coll_node(
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
+=======
+                                    layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
+>>>>>>> merge traces for enabling multiple jobs
 =======
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
 >>>>>>> merge traces for enabling multiple jobs
@@ -531,7 +564,11 @@ class TextConverter:
                             bwd_ig_comp_node = None
                             if idx != (len(layers) - 1):
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
+=======
+                                bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
+>>>>>>> merge traces for enabling multiple jobs
 =======
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
@@ -542,7 +579,11 @@ class TextConverter:
                             if (len(layers) - idx - 1) == (last_bottom_layer + 1):
                                 bwd_ig_comm_node = self.get_comm_coll_node(
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
+=======
+                                    layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
+>>>>>>> merge traces for enabling multiple jobs
 =======
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
 >>>>>>> merge traces for enabling multiple jobs
@@ -556,6 +597,7 @@ class TextConverter:
                                 self.add_parent(bwd_ig_comm_node, bwd_ig_comp_node)
                                 layers[0].bwd_ig_comm_node = bwd_ig_comm_node
                                 encode_message(g, bwd_ig_comm_node)
+<<<<<<< HEAD
 <<<<<<< HEAD
                         if i == self.num_passes - 1:
                             self.add_parent(fwd_comp_node_terminal, bwd_wg_comp_node)
@@ -640,6 +682,8 @@ class TextConverter:
                             self.add_parent(bwd_ig_comm_node, bwd_ig_comp_node)
                             layers[0].bwd_ig_comm_node = bwd_ig_comm_node
                             encode_message(g, bwd_ig_comm_node)
+=======
+>>>>>>> merge traces for enabling multiple jobs
 
 >>>>>>> upd
                 for layer in layers:
