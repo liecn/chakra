@@ -89,8 +89,8 @@ class TextConverter:
         node.type = node_type
         return node
 
-    def get_comp_node(self, layer_name: str, phase: str, comp_time: int) -> Any:
-        node = self.get_node("COMP_NODE_" + layer_name + "_" + phase, COMP_NODE)
+    def get_comp_node(self, layer_name: str, phase: str, comp_time: int, concurrent_idx:int = 0) -> Any:
+        node = self.get_node(f"COMP_NODE_{layer_name}_{phase}_{concurrent_idx}", COMP_NODE)
         node.duration_micros = comp_time
         return node
 
@@ -105,8 +105,8 @@ class TextConverter:
             return REDUCE_SCATTER
         return 0
 
-    def get_comm_coll_node(self, layer_name: str, comm_type: str, comm_size: int) -> Any:
-        node = self.get_node(f"COMM_COLL_NODE_{layer_name}_{comm_type}", COMM_COLL_NODE)
+    def get_comm_coll_node(self, layer_name: str, comm_type: str, comm_size: int,concurrent_idx:int = 0) -> Any:
+        node = self.get_node(f"COMM_COLL_NODE_{layer_name}_{comm_type}_{concurrent_idx}", COMM_COLL_NODE)
         node.attr.append(ChakraAttr(name="comm_type", int64_val=self.get_comm_type(comm_type)))
         node.attr.append(ChakraAttr(name="comm_size", uint64_val=comm_size))
         return node
@@ -427,15 +427,15 @@ class TextConverter:
                 for concurrent_idx in range(self.num_concurrency):
                     print(f"concurrent_idx: {concurrent_idx}/{self.num_concurrency}, {num_layers}")
                     layers=copy.deepcopy(layers_init)
-                    for layer in layers:
-                        layer.name+=f"_{concurrent_idx}"
+                    # for layer in layers:
+                    #     layer.name+=f"_{concurrent_idx}"
                     for i in range(self.num_passes):
                         print(f"num_pass: {i}, {len(layers)}")
                         fwd_comp_node = None
                         # forward pass
                         for idx, layer in enumerate(layers):
                             print(f"layer: {layer.name}")
-                            fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time)
+                            fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
                             if layer.bwd_wg_comm_node is not None:
                                 self.add_parent(fwd_comp_node, layer.bwd_wg_comm_node)
                             elif layer.bwd_wg_comp_node is not None:
@@ -451,7 +451,7 @@ class TextConverter:
 
                             if layer.fwd_comm_type == "ALLTOALL":
                                 fwd_comm_node = self.get_comm_coll_node(
-                                    layer.name, layer.fwd_comm_type, layer.fwd_comm_size
+                                    layer.name, layer.fwd_comm_type, layer.fwd_comm_size,concurrent_idx
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -463,7 +463,7 @@ class TextConverter:
 
                         # backward pass
                         for idx, layer in enumerate(reversed(layers)):
-                            bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
+                            bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
                             if idx == 0:
                                 if fwd_comp_node is None:
                                     raise ValueError("fwd_comp_node is None")
@@ -478,7 +478,7 @@ class TextConverter:
 
                             if layer.bwd_wg_comm_type != "NONE":
                                 bwd_wg_comm_node = self.get_comm_coll_node(
-                                    layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
+                                    layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -490,14 +490,14 @@ class TextConverter:
 
                             bwd_ig_comp_node = None
                             if idx != (len(layers) - 1):
-                                bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
+                                bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
                                 self.add_parent(bwd_ig_comp_node, bwd_wg_comp_node)
                                 layer.bwd_ig_comp_node = bwd_ig_comp_node
                                 encode_message(g, bwd_ig_comp_node)
 
                             if (len(layers) - idx - 1) == (last_bottom_layer + 1):
                                 bwd_ig_comm_node = self.get_comm_coll_node(
-                                    layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
+                                    layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
