@@ -8,20 +8,10 @@ from typing import Any, Dict, List, Tuple
 
 
 class TID(IntEnum):
-    """
-    Enum representing the types of TID (Thread ID) used for classifying different nodes in a trace.
-
-    Attributes
-        LOCAL_MEMORY (int): Represents local memory nodes.
-        REMOTE_MEMORY (int): Represents remote memory nodes.
-        COMP (int): Represents compute nodes.
-        COMM (int): Represents communication nodes.
-    """
-
-    LOCAL_MEMORY = 1
-    REMOTE_MEMORY = 2
-    COMP = 3
-    COMM = 4
+    COMP = 0
+    COMM = 1
+    LOCAL_MEMORY = 2
+    REMOTE_MEMORY = 3
 
 
 def get_logger(log_filename: str) -> logging.Logger:
@@ -81,6 +71,11 @@ def get_tid(node_name: str) -> TID:
     else:
         raise ValueError(f"Node type cannot be identified from {node_name}")
 
+def get_jobid(node_name: str) -> int:
+    try:
+        return int(float(node_name.split("_")[-1]))
+    except Exception as e:
+        return 0
 
 def parse_event(line: str) -> Tuple[str, int, int, int, str]:
     try:
@@ -109,6 +104,8 @@ def get_trace_events(input_filename: str, num_npus: int, npu_frequency: int) -> 
                 elif trace_type == "callback":
                     node_name = trace_dict[npu_id][node_id][0]
                     tid = get_tid(node_name)
+                    jid = get_jobid(node_name)
+                    tid = 2*jid+tid
                     issued_cycle = trace_dict[npu_id][node_id][1]
                     issued_ms = (issued_cycle / npu_frequency) * 1_000
                     duration_in_cycles = curr_cycle - issued_cycle
