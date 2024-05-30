@@ -454,18 +454,24 @@ class TextConverter:
                 for concurrent_idx in range(self.num_concurrency):
                     print(f"concurrent_idx: {concurrent_idx}/{self.num_concurrency}, {num_layers}")
                     layers=copy.deepcopy(layers_init)
+<<<<<<< HEAD
                     for layer in layers:
                         layer.name+=f"_{concurrent_idx}"
 <<<<<<< HEAD
 >>>>>>> merge traces for enabling multiple jobs
 =======
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                    # for layer in layers:
+                    #     layer.name+=f"_{concurrent_idx}"
+>>>>>>> adapt the node name for conversion and visualization
                     for i in range(self.num_passes):
                         print(f"num_pass: {i}, {len(layers)}")
                         fwd_comp_node = None
                         # forward pass
                         for idx, layer in enumerate(layers):
                             print(f"layer: {layer.name}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                             fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
@@ -475,6 +481,9 @@ class TextConverter:
 =======
                             fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                            fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
+>>>>>>> adapt the node name for conversion and visualization
                             if layer.bwd_wg_comm_node is not None:
                                 self.add_parent(fwd_comp_node, layer.bwd_wg_comm_node)
                             elif layer.bwd_wg_comp_node is not None:
@@ -502,6 +511,7 @@ class TextConverter:
                                 fwd_comm_node = self.get_comm_coll_node(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size*concurrency_factor[concurrent_idx],concurrent_idx
 =======
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size
@@ -509,6 +519,9 @@ class TextConverter:
 =======
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                                    layer.name, layer.fwd_comm_type, layer.fwd_comm_size,concurrent_idx
+>>>>>>> adapt the node name for conversion and visualization
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -522,6 +535,7 @@ class TextConverter:
                         for idx, layer in enumerate(reversed(layers)):
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
 =======
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
@@ -529,6 +543,9 @@ class TextConverter:
 =======
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                            bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
+>>>>>>> adapt the node name for conversion and visualization
                             if idx == 0:
                                 if fwd_comp_node is None:
                                     raise ValueError("fwd_comp_node is None")
@@ -545,6 +562,7 @@ class TextConverter:
                                 bwd_wg_comm_node = self.get_comm_coll_node(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
 =======
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
@@ -552,6 +570,9 @@ class TextConverter:
 =======
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                                    layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
+>>>>>>> adapt the node name for conversion and visualization
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -565,6 +586,7 @@ class TextConverter:
                             if idx != (len(layers) - 1):
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
 =======
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
@@ -572,12 +594,16 @@ class TextConverter:
 =======
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                                bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
+>>>>>>> adapt the node name for conversion and visualization
                                 self.add_parent(bwd_ig_comp_node, bwd_wg_comp_node)
                                 layer.bwd_ig_comp_node = bwd_ig_comp_node
                                 encode_message(g, bwd_ig_comp_node)
 
                             if (len(layers) - idx - 1) == (last_bottom_layer + 1):
                                 bwd_ig_comm_node = self.get_comm_coll_node(
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
@@ -587,6 +613,9 @@ class TextConverter:
 =======
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                                    layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
+>>>>>>> adapt the node name for conversion and visualization
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
