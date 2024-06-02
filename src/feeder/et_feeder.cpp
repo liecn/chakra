@@ -4,7 +4,7 @@ using namespace std;
 using namespace Chakra;
 
 ETFeeder::ETFeeder(string filename)
-    : trace_(filename), window_size_(4096 * 256), et_complete_(false) {
+    : trace_(filename), window_size_(4096 * 4096), et_complete_(false) {
   if (!trace_.is_open()) { // Assuming a method to check if file is open
     throw std::runtime_error("Failed to open trace file: " + filename);
   }
@@ -152,6 +152,7 @@ void ETFeeder::readNextWindow() {
   do {
     shared_ptr<ETFeederNode> new_node = readNode();
     if (new_node == nullptr) {
+      cout<<"ET trace file is completely read."<<endl;
       et_complete_ = true;
       break;
     }
@@ -161,7 +162,7 @@ void ETFeeder::readNextWindow() {
 
     resolveDep();
   } while ((num_read < window_size_) || (dep_unresolved_node_set_.size() != 0));
-
+  cout<<"Read "<<num_read<<" nodes."<<endl;
   for (auto node_id_node : dep_graph_) {
     uint64_t node_id = node_id_node.first;
     shared_ptr<ETFeederNode> node = node_id_node.second;
