@@ -451,6 +451,7 @@ class TextConverter:
 >>>>>>> merge traces for enabling multiple jobs
                 fwd_comp_node_init = self.get_comp_node('Init', "FWD", 0)
                 encode_message(g, fwd_comp_node_init)
+                fwd_comp_node_terminal = self.get_comp_node('Terminal', "FWD", 0)
                 for concurrent_idx in range(self.num_concurrency):
                     print(f"concurrent_idx: {concurrent_idx}/{self.num_concurrency}, {num_layers}")
                     layers=copy.deepcopy(layers_init)
@@ -493,6 +494,7 @@ class TextConverter:
                             else:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 if i==0:
                                     self.add_parent(fwd_comp_node, fwd_comp_node_init)
                                     fwd_comp_node.duration_micros+=concurrent_idx*10
@@ -502,6 +504,10 @@ class TextConverter:
 =======
                                 self.add_parent(fwd_comp_node, fwd_comp_node_init)
 >>>>>>> merge traces for enabling multiple jobs
+=======
+                                if i==0:
+                                    self.add_parent(fwd_comp_node, fwd_comp_node_init)
+>>>>>>> fix io bug
                             if idx == last_bottom_layer:
                                 self.add_parent(fwd_comp_node, layers[0].fwd_comm_node)
                             layer.fwd_comp_node = fwd_comp_node
@@ -628,6 +634,7 @@ class TextConverter:
                                 encode_message(g, bwd_ig_comm_node)
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                         if i == self.num_passes - 1:
                             self.add_parent(fwd_comp_node_terminal, bwd_wg_comp_node)
                 encode_message(g, fwd_comp_node_terminal)
@@ -715,6 +722,11 @@ class TextConverter:
 >>>>>>> merge traces for enabling multiple jobs
 
 >>>>>>> upd
+=======
+                        if i == self.num_passes - 1:
+                            self.add_parent(fwd_comp_node_terminal, bwd_wg_comp_node)
+                encode_message(g, fwd_comp_node_terminal)
+>>>>>>> fix io bug
                 for layer in layers:
                     layer.bwd_wg_comm_node = None
                     layer.bwd_wg_comp_node = None
