@@ -3,15 +3,14 @@
 # Define the arrays of values for p and c
 # p_values=(1 5 10)  # Add or modify values as needed
 # c_values=(1 4)  # Add or modify values as needed
-p_values=(1 5)  # Add or modify values as needed
+p_values=(5)  # Add or modify values as needed
 c_values=(1 4)  # Add or modify values as needed
+num_npus=4
+num_dims=1
 
 TRACE_DIR="/data1/lichenni/projects/astra-sim/inputs/workload/trace"
 TRACE_NAME="DLRM_HybridParallel"
 TRACE_PATH="/data1/lichenni/projects/astra-sim/inputs/workload/ASTRA-sim-1.0/${TRACE_NAME}.txt"
-
-num_npus=4
-num_dims=1
 
 # Loop through each combination of p and c
 for p in "${p_values[@]}"; do
@@ -29,9 +28,14 @@ for p in "${p_values[@]}"; do
       continue
     fi
     
+    
+
     input_filename="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}.0.et"
     output_pdf="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}.0.pdf"
+    output_json="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}.0.json"
     
+    chakra_jsonizer --input_filename "${input_filename}" --output_filename "${output_json}"
+
     # Execute the chakra_visualizer command
     chakra_visualizer --input_filename "${input_filename}" --output_filename "${output_pdf}"
     
