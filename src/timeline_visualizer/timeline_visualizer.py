@@ -8,12 +8,6 @@ from typing import Any, Dict, List, Tuple
 
 
 class TID(IntEnum):
-<<<<<<< HEAD
-    COMP = 0
-    COMM = 1
-    LOCAL_MEMORY = 2
-    REMOTE_MEMORY = 3
-=======
     """
     Enum representing the types of TID (Thread ID) used for classifying different nodes in a trace.
 
@@ -24,11 +18,10 @@ class TID(IntEnum):
         COMM (int): Represents communication nodes.
     """
 
-    LOCAL_MEMORY = 1
-    REMOTE_MEMORY = 2
-    COMP = 3
-    COMM = 4
->>>>>>> upstream/main
+    COMP = 0
+    COMM = 1
+    LOCAL_MEMORY = 2
+    REMOTE_MEMORY = 3
 
 
 def get_logger(log_filename: str) -> logging.Logger:
