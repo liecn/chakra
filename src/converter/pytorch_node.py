@@ -6,6 +6,15 @@ from .pytorch_tensor import PyTorchTensor
 
 
 class PyTorchNodeType(Enum):
+    """
+    Enum representing the type of a PyTorch node in an execution trace.
+
+    Attributes
+        CPU_OP (int): Represents a CPU operation.
+        GPU_OP (int): Represents a GPU operation.
+        LABEL (int): Represents a non-operator node (e.g., labels).
+    """
+
     CPU_OP = 1
     GPU_OP = 2
     LABEL = 3  # Non-operator nodes
@@ -13,16 +22,14 @@ class PyTorchNodeType(Enum):
 
 class PyTorchNode:
     """
-    Represents a node in a PyTorch execution trace, initialized based on a
-    schema version.
+    Represents a node in a PyTorch execution trace, initialized based on a schema version.
 
-    Attributes:
+    Attributes
         schema (str): Schema version used for initialization.
         data_deps (List[PyTorchNode]): List of data-dependent parent nodes.
         children (List[PyTorchNode]): List of child nodes.
         gpu_children (List[PyTorchNode]): List of GPU-specific child nodes.
-        record_param_comms_node (Optional[PyTorchNode]): Corresponding
-            record_param_comms node.
+        record_param_comms_node (Optional[PyTorchNode]): Corresponding record_param_comms node.
         nccl_node (Optional[PyTorchNode]): Corresponding NCCL node.
         id (str): Identifier of the node.
         name (str): Name of the node.
@@ -37,18 +44,15 @@ class PyTorchNode:
         stream (Any): Stream associated with the node.
     """
 
-    SUPPORTED_VERSIONS = ["1.0.2-chakra.0.0.4", "1.0.3-chakra.0.0.4"]
+    SUPPORTED_VERSIONS = ["1.0.2-chakra.0.0.4", "1.0.3-chakra.0.0.4", "1.1.0-chakra.0.0.4"]
 
     def __init__(self, schema: str, node_data: Dict[str, Any]) -> None:
         """
-        Initializes a PyTorchNode object using the node data and schema version
-        provided.
+        Initialize a PyTorchNode object using the node data and schema version provided.
 
         Args:
-            schema (str): The schema version based on which the node will be
-                initialized.
-            node_data (Dict[str, Any]): Dictionary containing the data of the
-                PyTorch node.
+            schema (str): The schema version based on which the node will be initialized.
+            node_data (Dict[str, Any]): Dictionary containing the data of the PyTorch node.
         """
         self.schema = schema
         self.data_deps: List["PyTorchNode"] = []
@@ -61,35 +65,30 @@ class PyTorchNode:
 
     def __repr__(self) -> str:
         """
-        Provides a string representation of the PyTorchNode.
+        Provide a string representation of the PyTorchNode.
 
-        Returns:
+        Returns
             str: String representation of the node.
         """
         return (
-            f"PyTorchNode("
-            f"id={self.id}, name={self.name}, "
-            f"op_type={self.get_op_type()}, "
-            f"timestamp={self.ts}, "
-            f"inclusive_duration={self.inclusive_dur}, "
-            f"exclusive_duration={self.exclusive_dur})"
+            f"PyTorchNode(id={self.id}, name={self.name}, op_type={self.get_op_type()}, timestamp={self.ts}, "
+            f"inclusive_duration={self.inclusive_dur}, exclusive_duration={self.exclusive_dur})"
         )
 
     def parse_data(self, node_data: Dict[str, Any]) -> None:
         """
-        Parses node data based on the provided schema version.
+        Parse node data based on the provided schema version.
 
         Args:
             node_data (Dict[str, Any]): The node data to be parsed.
         """
         if self.schema in self.SUPPORTED_VERSIONS:
-            if self.schema == "1.0.2-chakra.0.0.4" or self.schema == "1.0.3-chakra.0.0.4":
+            if self.schema in ["1.0.2-chakra.0.0.4", "1.0.3-chakra.0.0.4", "1.1.0-chakra.0.0.4"]:
                 self._parse_data_1_0_3_chakra_0_0_4(node_data)
         else:
             raise ValueError(
-                f"Unsupported schema version '{self.schema}'. Please check "
-                f"if the schema version is in the list of supported versions: "
-                f"{self.SUPPORTED_VERSIONS}"
+                f"Unsupported schema version '{self.schema}'. Please check if the schema version is in the list of "
+                f"supported versions: {self.SUPPORTED_VERSIONS}"
             )
 
     def _parse_data_1_0_3_chakra_0_0_4(self, node_data: Dict[str, Any]) -> None:
@@ -110,9 +109,9 @@ class PyTorchNode:
 
     def get_op_type(self) -> PyTorchNodeType:
         """
-        Determines the type of PyTorch operation.
+        Determine the type of PyTorch operation.
 
-        Returns:
+        Returns
             PyTorchNodeType: The type of the PyTorch operation.
         """
         if self.is_gpu_op():
@@ -124,25 +123,25 @@ class PyTorchNode:
 
     def is_cpu_op(self) -> bool:
         """
-        Checks if the node is a CPU operator.
+        Check if the node is a CPU operator.
 
-        Returns:
+        Returns
             bool: True if the node is a CPU operator, False otherwise.
         """
         return self.get_op_type() == PyTorchNodeType.CPU_OP
 
     def is_gpu_op(self) -> bool:
         """
-        Checks if the node is a GPU operator.
+        Check if the node is a GPU operator.
 
-        Returns:
+        Returns
             bool: True if the node is a GPU operator, False otherwise.
         """
         return self.cat is not None
 
     def add_data_dep(self, parent_node: "PyTorchNode") -> None:
         """
-        Adds a data-dependent parent node to this node.
+        Add a data-dependent parent node to this node.
 
         Args:
             parent_node (PyTorchNode): The parent node to be added.
@@ -151,7 +150,7 @@ class PyTorchNode:
 
     def add_child(self, child_node: "PyTorchNode") -> None:
         """
-        Adds a child node to this node.
+        Add a child node to this node.
 
         Args:
             child_node (PyTorchNode): The child node to be added.
@@ -160,29 +159,27 @@ class PyTorchNode:
 
     def add_gpu_child(self, gpu_child_node: "PyTorchNode") -> None:
         """
-        Adds a child GPU node for this node.
+        Add a child GPU node for this node.
 
         Args:
-            gpu_child_node (Optional[PyTorchNode]): The child GPU node to be
-                added.
+            gpu_child_node (Optional[PyTorchNode]): The child GPU node to be added.
         """
         self.gpu_children.append(gpu_child_node)
 
     def is_record_param_comms_op(self) -> bool:
         """
-        Checks if the node is a record_param_comms operator.
+        Check if the node is a record_param_comms operator.
 
-        Returns:
-            bool: True if the node is a record_param_comms operator, False
-                otherwise.
+        Returns
+            bool: True if the node is a record_param_comms operator, False otherwise.
         """
         return "record_param_comms" in self.name
 
     def is_nccl_op(self) -> bool:
         """
-        Checks if the node is a NCCL operator.
+        Check if the node is a NCCL operator.
 
-        Returns:
+        Returns
             bool: True if the node is a NCCL operator, False otherwise.
         """
         return "nccl:" in self.name
@@ -190,23 +187,29 @@ class PyTorchNode:
     @property
     def comm_size(self) -> int:
         """
-        Calculates the communication size for the given input types and shapes.
+        Calculate the communication size for the given input types and shapes.
 
-        Returns:
+        Returns
             int: The calculated communication size.
         """
         comm_size = 0
         for input_value, input_type in zip(self.inputs["values"], self.inputs["types"]):
             if "Tensor" in input_type:
-                tensor = PyTorchTensor(input_value)
-                input_size = tensor.num_elem * tensor.elem_bytes
-                comm_size += input_size
+                if input_type.startswith("GenericList[Tensor"):
+                    for inner_value in input_value:
+                        tensor = PyTorchTensor(inner_value)
+                        input_size = tensor.num_elem * tensor.elem_bytes
+                        comm_size += input_size
+                else:
+                    tensor = PyTorchTensor(input_value)
+                    input_size = tensor.num_elem * tensor.elem_bytes
+                    comm_size += input_size
         return comm_size
 
     @staticmethod
     def get_data_type_size(data_type: str) -> int:
         """
-        Returns the data type size of a given data type in string.
+        Return the data type size of a given data type in string.
 
         Args:
             data_type (str): The data type as a string.
@@ -246,10 +249,8 @@ class PyTorchNode:
         except KeyError as e:
             traceback_str = traceback.format_exc()
             raise ValueError(
-                f"Unsupported data type: {data_type}. The data_type_size_map "
-                f"dictionary is used for mapping the number of bytes for a "
-                f"given tensor data type. This dictionary may be incomplete. "
-                f"Please update the data_type_size_map or report this issue "
-                f"to the maintainer by creating an issue. Traceback:\n"
+                f"Unsupported data type: {data_type}. The data_type_size_map dictionary is used for mapping the "
+                f"number of bytes for a given tensor data type. This dictionary may be incomplete. Please update the "
+                f"data_type_size_map or report this issue to the maintainer by creating an issue. Traceback:\n"
                 f"{traceback_str}"
             ) from e
