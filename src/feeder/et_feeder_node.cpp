@@ -27,6 +27,7 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
       for (const bool val : attr.bool_list().values()) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         this->involved_dim_.push_back(val);
       }
       this->involved_dim_size_ = this->involved_dim_.size();
@@ -42,6 +43,11 @@ ETFeederNode::ETFeederNode(std::shared_ptr<ChakraProtoMsg::Node> node) {
       }
       this->involved_dim_size_ = this->involved_dim_.size();
 >>>>>>> fix bug
+=======
+        this->involved_dim_.push_back(val);
+      }
+      this->involved_dim_size_ = this->involved_dim_.size();
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
     } else if (attr_name == "comm_priority") {
       this->comm_priority_ = static_cast<uint32_t>(attr.int32_val());
     } else if (attr_name == "comm_size") {

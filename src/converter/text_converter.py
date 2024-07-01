@@ -55,6 +55,7 @@ class TextConverter:
     def __init__(
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
 =======
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, logger: logging.Logger
@@ -62,6 +63,9 @@ class TextConverter:
 =======
         self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
 >>>>>>> merge traces for enabling multiple jobs
+=======
+        self, input_filename: str, output_filename: str, num_dims: int, num_npus: int, num_passes: int, num_concurrency: int, logger: logging.Logger
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
     ) -> None:
         self.input_filename = input_filename
         self.output_filename = output_filename
@@ -428,6 +432,7 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         concurrency_factor=np.linspace(300, 300, self.num_concurrency).astype(int)
 =======
 >>>>>>> merge traces for enabling multiple jobs
@@ -436,6 +441,9 @@ class TextConverter:
 =======
         concurrency_factor=np.linspace(300, 300, self.num_concurrency).astype(int)
 >>>>>>> adjust the multi-task generation
+=======
+        concurrency_factor=np.linspace(300, 300, self.num_concurrency).astype(int)
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
         for npu_id in range(self.num_npus):
             output_filename = "%s.%d.et" % (self.output_filename, npu_id)
             with open(output_filename, "wb") as g:
@@ -445,12 +453,16 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                 fwd_comp_node_init = self.get_comp_node('Init', "FWD", 1)
                 encode_message(g, fwd_comp_node_init)
                 fwd_comp_node_terminal = self.get_comp_node('Terminal', "FWD", 1)
                 for concurrent_idx in range(self.num_concurrency):
                     print(f"concurrent_idx: {concurrent_idx}/{self.num_concurrency}, {num_layers}")
                     layers=copy.deepcopy(layers_init)
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> merge traces for enabling multiple jobs
@@ -477,12 +489,15 @@ class TextConverter:
 >>>>>>> adapt the node name for conversion and visualization
 =======
 >>>>>>> adjust the multi-task generation
+=======
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                     for i in range(self.num_passes):
                         print(f"num_pass: {i}, {len(layers)}")
                         fwd_comp_node = None
                         # forward pass
                         for idx, layer in enumerate(layers):
                             print(f"layer: {layer.name}")
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -496,6 +511,9 @@ class TextConverter:
 =======
                             fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
 >>>>>>> adapt the node name for conversion and visualization
+=======
+                            fwd_comp_node = self.get_comp_node(layer.name, "FWD", layer.fwd_comp_time,concurrent_idx)
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                             if layer.bwd_wg_comm_node is not None:
                                 self.add_parent(fwd_comp_node, layer.bwd_wg_comm_node)
                             elif layer.bwd_wg_comp_node is not None:
@@ -503,6 +521,7 @@ class TextConverter:
                             if idx != 0:
                                 self.add_parent(fwd_comp_node, layers[idx - 1].fwd_comp_node)
                             else:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -522,6 +541,11 @@ class TextConverter:
 >>>>>>> fix io bug
 =======
 >>>>>>> adjust the multi-task generation
+=======
+                                if i==0:
+                                    self.add_parent(fwd_comp_node, fwd_comp_node_init)
+                                    fwd_comp_node.duration_micros+=concurrent_idx*10
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                             if idx == last_bottom_layer:
                                 self.add_parent(fwd_comp_node, layers[0].fwd_comm_node)
                             layer.fwd_comp_node = fwd_comp_node
@@ -529,6 +553,7 @@ class TextConverter:
 
                             if layer.fwd_comm_type == "ALLTOALL":
                                 fwd_comm_node = self.get_comm_coll_node(
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -546,6 +571,9 @@ class TextConverter:
 =======
                                     layer.name, layer.fwd_comm_type, layer.fwd_comm_size*concurrency_factor[concurrent_idx],concurrent_idx
 >>>>>>> adjust the multi-task generation
+=======
+                                    layer.name, layer.fwd_comm_type, layer.fwd_comm_size*concurrency_factor[concurrent_idx],concurrent_idx
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -560,6 +588,7 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
 =======
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time)
@@ -570,6 +599,9 @@ class TextConverter:
 =======
                             bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
 >>>>>>> adapt the node name for conversion and visualization
+=======
+                            bwd_wg_comp_node = self.get_comp_node(layer.name, "BWD_WG", layer.bwd_wg_comp_time,concurrent_idx)
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                             if idx == 0:
                                 if fwd_comp_node is None:
                                     raise ValueError("fwd_comp_node is None")
@@ -587,6 +619,7 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
 =======
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size
@@ -597,6 +630,9 @@ class TextConverter:
 =======
                                     layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
 >>>>>>> adapt the node name for conversion and visualization
+=======
+                                    layer.name, layer.bwd_wg_comm_type, layer.bwd_wg_comm_size,concurrent_idx
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -611,6 +647,7 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
 =======
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time)
@@ -621,6 +658,9 @@ class TextConverter:
 =======
                                 bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
 >>>>>>> adapt the node name for conversion and visualization
+=======
+                                bwd_ig_comp_node = self.get_comp_node(layer.name, "BWD_IG", layer.bwd_ig_comp_time,concurrent_idx)
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                                 self.add_parent(bwd_ig_comp_node, bwd_wg_comp_node)
                                 layer.bwd_ig_comp_node = bwd_ig_comp_node
                                 encode_message(g, bwd_ig_comp_node)
@@ -630,6 +670,7 @@ class TextConverter:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
 =======
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size
@@ -640,6 +681,9 @@ class TextConverter:
 =======
                                     layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
 >>>>>>> adapt the node name for conversion and visualization
+=======
+                                    layers[0].name, layers[0].bwd_ig_comm_type, layers[0].bwd_ig_comm_size,concurrent_idx
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                                 )
                                 attr = ChakraAttr(name="involved_dim")
                                 for _ in range(self.num_dims):
@@ -650,6 +694,7 @@ class TextConverter:
                                 self.add_parent(bwd_ig_comm_node, bwd_ig_comp_node)
                                 layers[0].bwd_ig_comm_node = bwd_ig_comm_node
                                 encode_message(g, bwd_ig_comm_node)
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -745,6 +790,11 @@ class TextConverter:
                             self.add_parent(fwd_comp_node_terminal, bwd_wg_comp_node)
                 encode_message(g, fwd_comp_node_terminal)
 >>>>>>> fix io bug
+=======
+                        if i == self.num_passes - 1:
+                            self.add_parent(fwd_comp_node_terminal, bwd_wg_comp_node)
+                encode_message(g, fwd_comp_node_terminal)
+>>>>>>> a2d64da192d0144358149fcb6b71b59743dd1e1f
                 for layer in layers:
                     layer.bwd_wg_comm_node = None
                     layer.bwd_wg_comp_node = None
