@@ -45,7 +45,6 @@ class PyTorchConverter:
         """
         self.input_filename = input_filename
         self.output_filename = output_filename
-        self.chakra_et = None
         self.logger = logger
 
     def convert(self) -> None:
