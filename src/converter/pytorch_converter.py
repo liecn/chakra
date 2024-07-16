@@ -782,8 +782,4 @@ class PyTorchConverter:
 
             issued_nodes.clear()
 
-<<<<<<< HEAD
-        self.logger.info("Simulation of Chakra node execution completed.")
-=======
         logging.info("Simulation of Chakra node execution completed.")
->>>>>>> upstream/main
