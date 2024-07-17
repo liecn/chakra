@@ -54,20 +54,6 @@ def main() -> None:
     pytorch_parser.add_argument(
         "--input", type=str, required=True, help="Input Chakra host + device traces in the JSON format"
     )
-    parser.add_argument(
-        "--num_dims",
-        type=int,
-        default=None,
-        required=True,
-        help="Number of dimensions in the network topology")
-    parser.add_argument(
-        "--num_npus", type=int, default=None, required="Text" in sys.argv, help="Number of NPUs in a system"
-    )
-    parser.add_argument(
-        "--num_concurrency", type=int, default=None, required="Text" in sys.argv, help="Number of concurrent tasks in a system"
-    )
-    parser.add_argument(
-        "--num_passes", type=int, default=None, required="Text" in sys.argv, help="Number of training passes")
     pytorch_parser.add_argument(
         "--output", type=str, required=True, help="Output Chakra host + device traces in the protobuf format"
     )
@@ -113,6 +99,15 @@ def main() -> None:
             "Number of loops when generating traces based on the text input file. Increasing the number of passes "
             "increases the number of training iterations for a given text input."
         ),
+    )
+    text_parser.add_argument(
+        "--num-dims",
+        type=int,
+        default=None,
+        required=True,
+        help="Number of dimensions in the network topology")
+    text_parser.add_argument(
+        "--num-concurrency", type=int, default=None, required=True, help="Number of concurrent tasks in a system"
     )
     text_parser.set_defaults(func=convert_text)
 

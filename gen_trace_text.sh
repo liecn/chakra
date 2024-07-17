@@ -4,7 +4,7 @@
 # p_values=(1 5 10)  # Add or modify values as needed
 # c_values=(1 4)  # Add or modify values as needed
 p_values=(5)  # Add or modify values as needed
-c_values=(1 4)  # Add or modify values as needed
+c_values=(4)  # Add or modify values as needed
 num_npus=4
 num_dims=1
 
@@ -19,7 +19,7 @@ for p in "${p_values[@]}"; do
     output_filename="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}"
     
     # Execute the chakra_converter command
-    chakra_converter --input_type Text --input_filename "${TRACE_PATH}" --output_filename "${output_filename}" --num_npus ${num_npus} --num_passes ${p} --num_dims ${num_dims} --num_concurrency ${c}
+    chakra_converter Text --input "${TRACE_PATH}" --output "${output_filename}" --num-npus ${num_npus} --num-passes ${p} --num-dims ${num_dims} --num-concurrency ${c}
     
     if [ $? -eq 0 ]; then
       echo "chakra_converter successfully processed p=${p}, c=${c}"
@@ -27,8 +27,6 @@ for p in "${p_values[@]}"; do
       echo "chakra_converter failed to process p=${p}, c=${c}"
       continue
     fi
-    
-    
 
     input_filename="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}.0.et"
     output_pdf="${TRACE_DIR}/${TRACE_NAME}_p${p}_c${c}.0.pdf"
