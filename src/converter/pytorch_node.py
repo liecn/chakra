@@ -41,7 +41,7 @@ class PyTorchNode:
         ts (Optional[float]): Timestamp of the node.
         inter_thread_dep (Any): Inter-thread dependency of the node.
         cat (Any): Category of the node.
-        stream (Any): Stream associated with the node.
+        stream (int): Stream associated with the node.
     """
 
     SUPPORTED_VERSIONS = ["1.0.2-chakra.0.0.4", "1.0.3-chakra.0.0.4", "1.1.0-chakra.0.0.4"]
@@ -88,7 +88,13 @@ class PyTorchNode:
         else:
             raise ValueError(
                 f"Unsupported schema version '{self.schema}'. Please check if the schema version is in the list of "
-                f"supported versions: {self.SUPPORTED_VERSIONS}"
+                f"supported versions: {self.SUPPORTED_VERSIONS}. The schema version of the trace is not supported by "
+                f"the converter. The schema version is determined by the PyTorch version used to collect Chakra host "
+                f"execution traces. Please consider changing the PyTorch version you are using. For more details, you "
+                f"can follow the git history of the relevant file: "
+                f"https://github.com/pytorch/pytorch/blob/7cd48df2dae7e2194438b162968c47d1f05bf20e/torch/csrc/"
+                f"profiler/standalone/execution_trace_observer.cpp#L308. Check which PyTorch versions generate Chakra "
+                f"host traces that are supported by the converter."
             )
 
     def _parse_data_1_0_3_chakra_0_0_4(self, node_data: Dict[str, Any]) -> None:
@@ -102,7 +108,7 @@ class PyTorchNode:
         self.ts = node_data.get("ts")
         self.inter_thread_dep = node_data.get("inter_thread_dep")
         self.cat = node_data.get("cat")
-        self.stream = node_data.get("stream")
+        self.stream = node_data.get("stream", 0)
 
         for attr in node_data.get("attrs", []):
             setattr(self, attr["name"], attr["value"])
